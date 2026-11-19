@@ -26,14 +26,12 @@ public class ShittimChestBiomes extends ExtBiomeSource {
 
 	public static final String SHITTIM_CHEST_SEA_ID = "ba:shittim_chest_sea";
 
-	private static MutableBiomeSpecialEffects effects;
-
 	static {
 		CodecAutogen.CodecGenerator.callerCodec();
 		RegistryEntry.RegistriesProvider.callerDatagen();
 		ExecuteIn.Client(() -> {
-			effects = MutableBiomeSpecialEffects.from(SHITTIM_CHEST_SEA_ID).bindTo("minecraft:forest");
-			effects.tick(ColorLinearInterpolation.begin(0, Level.TICKS_PER_DAY)
+			MutableBiomeSpecialEffects fx = MutableBiomeSpecialEffects.from(SHITTIM_CHEST_SEA_ID).bindTo("minecraft:forest");
+			fx.tick(ColorLinearInterpolation.begin(0, Level.TICKS_PER_DAY)
 					.append(0, 254, 229, 166)// 6 h 黄
 					.append(1500, 165, 154, 188)// 7.5 h 淡蓝紫
 					.append(3000, 131, 210, 250)// 9 h 浅天蓝

@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;;
  * 客户端生命周期的网络事件管理
  */
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public enum ClientPlayerNetworkTrigger implements EventTrigger<ClientPlayerNetworkTrigger.Operation> {
 	CLIENT_LOGGING_IN(EventPriority.LOW), // 世界更新前
 	CLIENT_LOGGING_OUT(EventPriority.LOW); // 世界更新后

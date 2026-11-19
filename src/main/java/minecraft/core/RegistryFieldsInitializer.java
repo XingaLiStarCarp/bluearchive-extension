@@ -56,6 +56,10 @@ public class RegistryFieldsInitializer {
 		BootstrapRegistriesClasses.add(bootstrapRegCls);
 	}
 
+	public static void executeClientConnectInit(ClientLevel level, RegistryAccess.Frozen registryAccess) {
+		ModInit.Initializer.executeAllInitFuncs(null, ModInit.Stage.CLIENT_CONNECT);
+	}
+
 	class DynamicServer {
 		public static void initializeFields() {
 			Core.logInfo("Initializing server DynamicRegistry");

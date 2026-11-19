@@ -50,6 +50,6 @@ public class ExtItem extends Item implements Localizable {
 	}
 
 	public static final DeferredItem<Item> registerMod(String name) {
-		return registerMod(name);
+		return register(name);
 	}
 }

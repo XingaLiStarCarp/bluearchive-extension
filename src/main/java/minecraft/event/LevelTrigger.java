@@ -26,7 +26,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	private static void levelLoadHighest(LevelEvent.Load event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_LOAD.definition().priority(EventPriority.HIGHEST).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_LOAD.definition().priority(EventPriority.HIGHEST).execute(level);
@@ -35,7 +35,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	private static void levelLoadHigh(LevelEvent.Load event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_LOAD.definition().priority(EventPriority.HIGH).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_LOAD.definition().priority(EventPriority.HIGH).execute(level);
@@ -44,7 +44,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.LOW)
 	private static void levelLoadLow(LevelEvent.Load event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_LOAD.definition().priority(EventPriority.LOW).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_LOAD.definition().priority(EventPriority.LOW).execute(level);
@@ -53,7 +53,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	private static void levelLoadLowest(LevelEvent.Load event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_LOAD.definition().priority(EventPriority.LOWEST).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_LOAD.definition().priority(EventPriority.LOWEST).execute(level);
@@ -62,7 +62,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	private static void levelUnloadHighest(LevelEvent.Unload event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_UNLOAD.definition().priority(EventPriority.HIGHEST).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_UNLOAD.definition().priority(EventPriority.HIGHEST).execute(level);
@@ -71,7 +71,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	private static void levelUnloadHigh(LevelEvent.Unload event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_UNLOAD.definition().priority(EventPriority.HIGH).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_UNLOAD.definition().priority(EventPriority.HIGH).execute(level);
@@ -80,7 +80,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.LOW)
 	private static void levelUnloadLow(LevelEvent.Unload event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_UNLOAD.definition().priority(EventPriority.LOW).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_UNLOAD.definition().priority(EventPriority.LOW).execute(level);
@@ -89,7 +89,7 @@ public enum LevelTrigger implements EventTrigger<LevelTrigger.LevelTickOperation
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	private static void levelUnloadLowest(LevelEvent.Unload event) {
 		LevelAccessor level = event.getLevel();
-		if (level instanceof ClientLevel)
+		if (level.isClientSide())
 			LevelTrigger.CLIENT_LEVEL_UNLOAD.definition().priority(EventPriority.LOWEST).execute(level);
 		else
 			LevelTrigger.SERVER_LEVEL_UNLOAD.definition().priority(EventPriority.LOWEST).execute(level);

@@ -4,28 +4,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Logger;
 
+import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.GunTabType;
+import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
+import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 
+import minecraft.core.registry.MappedRegistryAccess;
 import minecraft.extended.tacz.TaczGuns;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
 public class GunUtils {
 
@@ -96,11 +97,6 @@ public class GunUtils {
 			return Collections.emptyMap();
 		}
 
-		Set<String> exclusiveIds = new HashSet<>();
-		getGunData(gunId).ifPresent(data -> {
-			data.getExclusiveAttachments().keySet().forEach(id -> exclusiveIds.add(id.toString()));
-		});
-
 		Map<AttachmentType, List<String>> result = new EnumMap<>(AttachmentType.class);
 		for (AttachmentType type : allowedTypes) {
 			result.put(type, new ArrayList<>());
@@ -120,68 +116,50 @@ public class GunUtils {
 			if (!allowedTypes.contains(type))
 				continue;
 
-			if (!exclusiveIds.isEmpty() && !exclusiveIds.contains(id.toString()))
-				continue;
-
 			result.get(type).add(id.toString());
 		}
 
 		return result;
 	}
 
-	// TODO: AI迁移，需要进一步验证
+	// 获取枪械配件并装配
 	public static void equipRandomAttachments(ItemStack gunStack, ResourceLocation gunId) {
-		var available = getAvailableAttachments(gunId);
-		if (available.isEmpty())
+		IGun gun = IGun.getIGunOrNull(gunStack);
+		if (gun == null){
 			return;
+		}
 
-		// 1. 获取或创建自定义数据组件
-		// 使用 getOrDefault 来安全地获取数据，避免空指针 [citation:4]
-		CustomData currentData = gunStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		// 复制一份 CompoundTag 进行修改，保持不可变性 [citation:1]
-		CompoundTag gunTag = currentData.copyTag();
+		Map<AttachmentType, List<String>> available = getAvailableAttachments(gunId);
+		if (available.isEmpty()){
+			return;
+		}
 
-		Map<AttachmentType, String> nbtKeyMap = Map.of(
-				AttachmentType.SCOPE, "AttachmentSCOPE",
-				AttachmentType.EXTENDED_MAG, "AttachmentEXTENDED_MAG",
-				AttachmentType.MUZZLE, "AttachmentMUZZLE",
-				AttachmentType.GRIP, "AttachmentGRIP",
-				AttachmentType.STOCK, "AttachmentSTOCK");
+		HolderLookup.Provider provider = MappedRegistryAccess.serverRegistryAccess;
+		if (provider == null){
+			LOGGER.warning("serverRegistryAccess is not initialized, skipping accessory generation");
+			return;
+		}
 
-		for (Map.Entry<AttachmentType, List<String>> entry : available.entrySet()) {
+		RandomSource random = RandomSource.create();
+
+		for (Map.Entry<AttachmentType, List<String>> entry : available.entrySet()){
 			AttachmentType type = entry.getKey();
-			List<String> attachments = entry.getValue();
-			if (type == null || attachments == null || attachments.isEmpty()) {
-				// 建议使用 LOGGER 替代 warning
-				LOGGER.warning("Skipping attachment because its type or list is null! (Check the gun pack JSON)");
+			List<String> pool = entry.getValue();
+			if (type == null || pool == null || pool.isEmpty()){
 				continue;
 			}
 
-			if (RANDOM.nextBoolean()) {
-				String selectedId = attachments.get(RANDOM.nextInt(attachments.size()));
-				String nbtKey = nbtKeyMap.get(type);
-				if (nbtKey != null) {
-					// 2. 向复制出的 CompoundTag 中写入数据
-					gunTag.put(nbtKey, buildAttachmentNBT(selectedId));
-				}
+			if (!DefaultAssets.isEmptyAttachmentId(gun.getAttachmentId(gunStack, type))){
+				continue;
 			}
+
+			if (random.nextFloat() >= 0.5f){
+				continue;
+			}
+
+			String id = pool.get(random.nextInt(pool.size()));
+			gun.installAttachment(provider, gunStack, AttachmentItemBuilder.create().setId(ResourceLocation.parse(id)).build());
 		}
-
-		// 3. 将修改后的数据重新设置回 ItemStack
-		// CustomData.of(gunTag) 用于将修改后的 CompoundTag 封装回新的 CustomData 对象 [citation:1][citation:9]
-		gunStack.set(DataComponents.CUSTOM_DATA, CustomData.of(gunTag));
-	}
-
-	private static CompoundTag buildAttachmentNBT(String attachmentId) {
-		CompoundTag outer = new CompoundTag();
-		outer.putString("id", "tacz:attachment");
-		outer.putByte("Count", (byte) 1);
-
-		CompoundTag inner = new CompoundTag();
-		inner.putString("AttachmentId", attachmentId);
-		outer.put("tag", inner);
-
-		return outer;
 	}
 
 	/**

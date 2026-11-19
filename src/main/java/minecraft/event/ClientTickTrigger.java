@@ -2,12 +2,13 @@ package minecraft.event;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public enum ClientTickTrigger implements EventTrigger<ClientTickTrigger.TickOperation> {
 	PRE_CLIENT_TICK(EventPriority.HIGH), // 世界更新前
 	POST_CLIENT_TICK(EventPriority.LOW); // 世界更新后

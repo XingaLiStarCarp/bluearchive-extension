@@ -126,9 +126,9 @@ public class Core {
 		unsafe.write_static(Core.class, "ModBus", getModEventBus(Mod));// 初始化赋值ModBus
 		load(true, "minecraft.core.registry.registries");// 加载并初始化注册表的字段初始化器
 		load(true, "minecraft.terrain.algorithm");// 加载地形生成算法包以生成对应的CODEC
-		ClientLifecycleTrigger.CLIENT_CONNECT.addCallback(EventPriority.HIGHEST, (ClientLevel level, RegistryAccess.Frozen registryAccess) -> {
-			ModInit.Initializer.executeAllInitFuncs(null, ModInit.Stage.CLIENT_CONNECT);
-		});
+		if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT){
+			ClientLifecycleTrigger.CLIENT_CONNECT.addCallback(EventPriority.HIGHEST, RegistryFieldsInitializer::executeClientConnectInit);
+		}
 	}
 
 	/**

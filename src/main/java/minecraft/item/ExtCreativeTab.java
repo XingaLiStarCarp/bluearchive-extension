@@ -5,6 +5,10 @@ import java.util.HashMap;
 
 import minecraft.core.registry.RegistryMap;
 import minecraft.datagen.Localizable;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import sys.jvm.type.java_type.base;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
@@ -45,7 +49,18 @@ public interface ExtCreativeTab extends base<ExtCreativeTab.Definition>, Localiz
 			builder = new CreativeModeTab.Builder(CreativeModeTab.Row.TOP, 0);
 			deferredHolder = CREATIVE_TABS.register(id, () -> {
 				return builder
-						.icon(() -> new ItemStack((ExtItem.ITEMS.contains(this.iconItem) ? ExtItem.ITEMS.get(this.iconItem) : ExtItem.registerMod(this.iconItem)).get()))
+						.icon(() -> {
+							if (ExtItem.ITEMS.contains(this.iconItem))
+								new ItemStack((ExtItem.ITEMS.contains(this.iconItem) ? ExtItem.ITEMS.get(this.iconItem) : ExtItem.registerMod(this.iconItem)).get());
+							ResourceLocation loc = ResourceLocation.tryParse(this.iconItem);
+							if (loc != null){
+								Item it = BuiltInRegistries.ITEM.get(loc);
+								if (it != Items.AIR){
+									return new ItemStack(it);
+								}
+							}
+							return new ItemStack(Items.AIR);
+						})
 						.title(this_.localizedComponent())
 						.displayItems((featureFlagSet, tabOutput) -> {
 							this.itemsList.forEach(item -> tabOutput.accept(new ItemStack(item.get())));
